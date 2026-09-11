@@ -1,0 +1,20 @@
+<div class="container mt-5" style="max-width: 700px;">
+  <h2 class="mb-3">New Thread</h2>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  <form #threadForm="ngForm" (ngSubmit)="submit(threadForm)">
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input type="text" class="form-control" name="title" ngModel required maxlength="256">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Content</label>
+      <textarea class="form-control" name="content" rows="8" ngModel required></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Create Thread</button>
+    <button type="button" class="btn btn-secondary ms-2" (click)="cancel()">Cancel</button>
+  </form>
+</div>

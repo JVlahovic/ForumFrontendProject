@@ -1,0 +1,35 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Threads</h2>
+    @if (isLogged) {
+    <a class="btn btn-primary" routerLink="/category/{{ categoryId }}/new">New Thread</a>
+    }
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (threads.length === 0 && !errorMessage) {
+    <p class="text-muted">No threads here yet. Be the first to post!</p>
+  }
+
+  <div class="list-group">
+    @for (thread of threads; track thread.id) {
+      <a class="list-group-item list-group-item-action" routerLink="/thread/{{ thread.id }}">
+        <div class="d-flex justify-content-between align-items-center">
+          <span>
+            @if (thread.isPinned) {
+              <span class="badge bg-warning text-dark me-1">Pinned</span>
+            }
+            @if (thread.isLocked) {
+              <span class="badge bg-secondary me-1">Locked</span>
+            }
+            {{ thread.title }}
+          </span>
+          <small class="text-muted">{{ thread.authorUsername }} · {{ thread.createdAt | date }}</small>
+        </div>
+      </a>
+    }
+  </div>
+</div>

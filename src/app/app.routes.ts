@@ -3,6 +3,8 @@ import {Login} from './components/login/login';
 import {Register} from './components/register/register';
 import {Verify} from './components/verify/verify';
 import {Home} from './components/home/home';
+import {ThreadList} from './components/thread-list/thread-list';
+import {ThreadCreate} from './components/thread-create/thread-create';
 
 export const routes: Routes = [
 
@@ -12,6 +14,10 @@ export const routes: Routes = [
 
   { path: 'verify', component: Verify },
 
-  { path: '', component: Home }
+  { path: '', component: Home },
+
+  { path: 'category/:categoryId', component: ThreadList },
+
+  { path: 'category/:categoryId/new', component: ThreadCreate }
 
 ];

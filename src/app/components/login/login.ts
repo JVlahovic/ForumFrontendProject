@@ -3,6 +3,7 @@ import {Router} from '@angular/router';
 import {LoginRequest} from '../../models/login-request';
 import {FormsModule, NgForm} from '@angular/forms';
 import {ApiAuthService} from '../../services/api/api-auth.service';
+import {extractErrorMessage} from '../../services/api/error.util';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +28,7 @@ export class Login {
         this.router.navigate(['/']);
       },
       error: (err) => {
-        this.errorMessage = err.error;
+        this.errorMessage = extractErrorMessage(err);
       }
     })
   }

@@ -6,5 +6,6 @@ export interface ThreadRead {
   createdAt: string;
 
   authorId: number;
+  authorUsername: string;
   threadCategoryId: number;
 }
