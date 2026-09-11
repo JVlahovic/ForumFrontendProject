@@ -1,0 +1,19 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark px-3">
+  <div class="container-fluid">
+    <div class="navbar-nav">
+      <a class="nav-link" routerLink="/">Home</a>
+      <a class="nav-link" routerLink="/rules">Rules</a>
+      <a class="nav-link" routerLink="/announcements">Announcements</a>
+      <a class="nav-link" routerLink="/user-panel">User Panel</a>
+    </div>
+    <div class="navbar-nav ms-auto">
+      @if (isLogged) {
+        <span class="nav-link text-light">{{ username }}</span>
+        <a class="nav-link" (click)="logout()" style="cursor: pointer;">Logout</a>
+      } @else {
+        <a class="nav-link" routerLink="/login">Login</a>
+        <a class="nav-link" routerLink="/register">Register</a>
+      }
+    </div>
+  </div>
+</nav>

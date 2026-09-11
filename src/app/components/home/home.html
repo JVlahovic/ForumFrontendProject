@@ -1,0 +1,15 @@
+<div class="container mt-4">
+  <h2>Categories</h2>
+  <div class="row">
+    @for (cat of categories; track cat.id) {
+      <div class="col-12 mb-3">
+        <a class="card card-body text-decoration-none" routerLink="/category/{{ cat.id }}">
+          <h5 class="card-title mb-1">{{ cat.name }}</h5>
+          @if (cat.description) {
+            <p class="card-text text-muted mb-0">{{ cat.description }}</p>
+          }
+        </a>
+      </div>
+    }
+  </div>
+</div>
