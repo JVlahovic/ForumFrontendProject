@@ -44,6 +44,19 @@
       </div>
     }
   </div>
+
+  @if (totalPages > 1) {
+    <nav class="d-flex justify-content-between align-items-center mt-3">
+      <button class="btn btn-outline-secondary btn-sm"
+              [disabled]="currentPage === 0"
+              (click)="goToPage(currentPage - 1)">Previous</button>
+      <span class="text-muted">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button class="btn btn-outline-secondary btn-sm"
+              [disabled]="currentPage >= totalPages - 1"
+              (click)="goToPage(currentPage + 1)">Next</button>
+    </nav>
+  }
+
   @if (thread?.isLocked) {
     <p class="text-muted mt-3">This thread is locked. Only moderators and admins can reply.</p>
   }
@@ -51,8 +64,8 @@
   @if (isLogged) {
     <form #replyForm="ngForm" (ngSubmit)="submitReply(replyForm)" class="mt-4">
       <div class="mb-2">
-      <textarea class="form-control" name="content" rows="4" ngModel required
-                placeholder="Write a reply..."></textarea>
+        <textarea class="form-control" name="content" rows="4" ngModel required
+                  placeholder="Write a reply..."></textarea>
       </div>
       <button class="btn btn-primary" type="submit" [disabled]="replyForm.invalid">Reply</button>
     </form>

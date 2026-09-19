@@ -32,8 +32,8 @@ export class ApiForumService {
     return this.http.get<ThreadRead>(this.url + '/threads/' + threadId);
   }
 
-  getPostsByThreadId$(threadId: number) {
-    return this.http.get<Page<PostRead>>(this.url + '/threads/' + threadId + '/posts');
+  getPostsByThreadId$(threadId: number, page = 0) {
+    return this.http.get<Page<PostRead>>(this.url + '/threads/' + threadId + '/posts?page=' + page);
   }
 
   createPost$(threadId: number, data: PostCreate) {
