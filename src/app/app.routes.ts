@@ -5,6 +5,7 @@ import {Verify} from './components/verify/verify';
 import {Home} from './components/home/home';
 import {ThreadList} from './components/thread-list/thread-list';
 import {ThreadCreate} from './components/thread-create/thread-create';
+import {ThreadDetail} from './components/thread-detail/thread-detail';
 
 export const routes: Routes = [
 
@@ -18,6 +19,10 @@ export const routes: Routes = [
 
   { path: 'category/:categoryId', component: ThreadList },
 
-  { path: 'category/:categoryId/new', component: ThreadCreate }
+  { path: 'category/:categoryId/new', component: ThreadCreate },
+
+  { path: 'thread/:threadId', component: ThreadDetail }
+
+
 
 ];

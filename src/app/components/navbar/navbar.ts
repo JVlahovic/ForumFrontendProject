@@ -18,8 +18,7 @@ export class Navbar {
   }
 
   logout() {
-    localStorage.removeItem('loginToken');
-    this.apiAuthService.isLogged.next(false);
+    this.apiAuthService.clearSession();
     window.location.href = '/'; //forces a refresh so when you log out the session is destroyed and noone can peep.
   }
 

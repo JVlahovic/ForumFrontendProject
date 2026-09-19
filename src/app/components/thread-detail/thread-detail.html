@@ -1,0 +1,60 @@
+<div class="container mt-4">
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (thread) {
+    <h2 class="mb-3">
+      @if (thread.isPinned) {
+        <span class="badge bg-warning text-dark me-1">Pinned</span>
+      }
+      @if (thread.isLocked) {
+        <span class="badge bg-secondary me-1">Locked</span>
+      }
+      {{ thread.title }}
+    </h2>
+  }
+
+  @if (originalPost) {
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between text-muted mb-2">
+          <strong>{{ originalPost.authorUsername }}</strong>
+          <small>{{ originalPost.createdAt | date }}</small>
+        </div>
+        <p class="card-text mb-0" style="white-space: pre-wrap;">{{ originalPost.content }}</p>
+      </div>
+    </div>
+  }
+
+  <h4 class="mb-3">Replies</h4>
+
+  @if (replies.length === 0) {
+    <p class="text-muted">No replies yet.</p>
+  }
+
+  <div class="list-group">
+    @for (reply of replies; track reply.id) {
+      <div class="list-group-item">
+        <div class="d-flex justify-content-between text-muted mb-1">
+          <strong>{{ reply.authorUsername }}</strong>
+          <small>{{ reply.createdAt | date }}</small>
+        </div>
+        <p class="mb-0" style="white-space: pre-wrap;">{{ reply.content }}</p>
+      </div>
+    }
+  </div>
+  @if (thread?.isLocked) {
+    <p class="text-muted mt-3">This thread is locked. Only moderators and admins can reply.</p>
+  }
+
+  @if (isLogged) {
+    <form #replyForm="ngForm" (ngSubmit)="submitReply(replyForm)" class="mt-4">
+      <div class="mb-2">
+      <textarea class="form-control" name="content" rows="4" ngModel required
+                placeholder="Write a reply..."></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit" [disabled]="replyForm.invalid">Reply</button>
+    </form>
+  }
+</div>

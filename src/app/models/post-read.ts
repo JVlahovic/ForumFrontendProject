@@ -7,4 +7,6 @@ export interface PostRead {
 
   authorId: number;
   threadId: number;
+
+  authorUsername: string;
 }
