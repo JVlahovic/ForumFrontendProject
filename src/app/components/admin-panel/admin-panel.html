@@ -1,0 +1,68 @@
+<div class="container mt-4">
+  <h2 class="mb-3">Admin Panel</h2>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  <table class="table table-striped align-middle">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Status</th>
+      <th>Role</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (user of users; track user.id) {
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            @if (user.isActive) {
+              <span class="badge bg-success">Active</span>
+            } @else {
+              <span class="badge bg-danger">Banned</span>
+            }
+          </td>
+          <td>{{ user.roleDescription }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm"
+                      [class.btn-danger]="user.isActive"
+                      [class.btn-success]="!user.isActive"
+                      (click)="toggleBan(user)">
+                {{ user.isActive ? 'Ban' : 'Unban' }}
+              </button>
+              <select class="form-select form-select-sm w-auto"
+                      (change)="onRoleChange(user.id, $event)">
+                @for (role of roles; track role.id) {
+                  <option [value]="role.id" [selected]="role.id === user.roleId">
+                    {{ role.roleDescription }}
+                  </option>
+                }
+              </select>
+              <button class="btn btn-sm btn-primary" (click)="applyRole(user.id)">Set</button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (totalPages > 1) {
+    <nav class="d-flex justify-content-between align-items-center">
+      <button class="btn btn-outline-secondary btn-sm"
+              [disabled]="currentPage === 0"
+              (click)="goToPage(currentPage - 1)">Previous</button>
+      <span class="text-muted">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button class="btn btn-outline-secondary btn-sm"
+              [disabled]="currentPage >= totalPages - 1"
+              (click)="goToPage(currentPage + 1)">Next</button>
+    </nav>
+  }
+</div>

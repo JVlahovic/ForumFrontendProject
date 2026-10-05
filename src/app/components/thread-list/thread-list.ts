@@ -22,10 +22,12 @@ export class ThreadList {
   categoryId = 0;
   threads: ThreadRead[] = [];
   errorMessage = '';
+  canPost = false;
 
   ngOnInit() {
     this.categoryId = Number(this.activatedRoute.snapshot.paramMap.get('categoryId'));
     this.loadThreads();
+    this.loadCanPost();
   }
 
   private loadThreads() {
@@ -38,6 +40,16 @@ export class ThreadList {
         this.errorMessage = extractErrorMessage(err);
         this.cdr.detectChanges();
       }
+    });
+  }
+
+  private loadCanPost() {
+    this.apiForumService.getCategories$().subscribe({
+      next: cats => {
+        this.canPost = cats.find(c => c.id === this.categoryId)?.canPost ?? false;
+        this.cdr.detectChanges();
+      },
+      error: () => { /* leave canPost false */ }
     });
   }
 

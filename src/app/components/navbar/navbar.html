@@ -4,7 +4,12 @@
       <a class="nav-link" routerLink="/">Home</a>
       <a class="nav-link" routerLink="/rules">Rules</a>
       <a class="nav-link" routerLink="/announcements">Announcements</a>
-      <a class="nav-link" routerLink="/user-panel">User Panel</a>
+      @if (isLogged) {
+        <a class="nav-link" routerLink="/user-panel">User Panel</a>
+      }
+      @if (isAdmin) {
+        <a class="nav-link" routerLink="/admin-panel">Admin Panel</a>
+      }
     </div>
     <div class="navbar-nav ms-auto">
       @if (isLogged) {

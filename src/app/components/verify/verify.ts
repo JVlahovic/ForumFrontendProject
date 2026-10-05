@@ -39,8 +39,14 @@ export class Verify {
 
   resend() {
     this.apiAuthService.resend$({ email: this.email }).subscribe({
-      next: () => this.successMessage = 'New code sent! Check your email again for the new code.',
-      error: (err) => this.errorMessage = err.error
+      next: () => {
+        this.successMessage = 'New code sent! Check your email again for the new code.';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMessage = err.error;
+        this.cdr.detectChanges();
+      }
     });
   }
 

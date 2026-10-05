@@ -3,4 +3,5 @@ export interface ThreadCategory {
   name: string;
   description: string;
   position: number;
+  canPost: boolean;
 }

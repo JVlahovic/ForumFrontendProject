@@ -26,4 +26,8 @@ export class Navbar {
     return this.apiAuthService.getUsernameFromToken() || 'User';
   }
 
+  get isAdmin() {
+    return this.apiAuthService.getRoleFromToken()?.toUpperCase() === 'ADMIN';
+  }
+
 }

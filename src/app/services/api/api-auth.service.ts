@@ -57,6 +57,13 @@ export class ApiAuthService {
     return (payload?.username as string) ?? null;
   }
 
+  getRoleFromToken(): string | null {
+    const token = localStorage.getItem('loginToken');
+    if (!token || this.isTokenExpired(token)) return null;
+    const payload = this.decodeToken(token);
+    return (payload?.role as string) ?? null;
+  }
+
   register$(data: RegisterRequest) {
     return this.http.post(
       this.url + '/register',
@@ -86,6 +93,22 @@ export class ApiAuthService {
       this.url + '/emailVerify/resend',
       data,
       { responseType: 'text'}
+    );
+  }
+
+  resetPasswordRequest$(data: ResendRequest) {
+    return this.http.post(
+      this.url + '/passwordReset/request',
+      data,
+      { responseType: 'text' }
+    );
+  }
+
+  resetPasswordConfirm$(data: VerifyRequest) {
+    return this.http.post(
+      this.url + '/passwordReset/confirm',
+      data,
+      { responseType: 'text' }
     );
   }
 
