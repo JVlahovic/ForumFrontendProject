@@ -5,6 +5,8 @@ import {AdminUser} from '../../models/admin-user';
 import {Page} from '../../models/page';
 import {RoleRead} from '../../models/role-read';
 import {RoleAssignment} from '../../models/role-assignment';
+import {ThreadCategory} from '../../models/thread-category';
+import {ThreadCategoryCreate} from '../../models/thread-category-create';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +35,18 @@ export class ApiAdminService {
   setRole$(id: number, roleId: number) {
     const body: RoleAssignment = {roleId};
     return this.http.put(this.url + '/adminpanel/users/' + id + '/role', body);
+  }
+
+  getCategories$() {
+    return this.http.get<ThreadCategory[]>(this.url + '/thread-categories');
+  }
+
+  createCategory$(data: ThreadCategoryCreate) {
+    return this.http.post<ThreadCategory>(this.url + '/thread-categories', data);
+  }
+
+  deleteCategory$(id: number) {
+    return this.http.delete(this.url + '/thread-categories/' + id);
   }
 
 }

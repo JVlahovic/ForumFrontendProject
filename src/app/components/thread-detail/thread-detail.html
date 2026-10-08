@@ -13,6 +13,18 @@
       }
       {{ thread.title }}
     </h2>
+
+    @if (canModerate) {
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-sm btn-outline-warning" (click)="togglePin()">
+          {{ thread.isPinned ? 'Unpin' : 'Pin' }}
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="toggleLock()">
+          {{ thread.isLocked ? 'Unlock' : 'Lock' }}
+        </button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteThread()">Delete Thread</button>
+      </div>
+    }
   }
 
   @if (originalPost) {
@@ -20,9 +32,25 @@
       <div class="card-body">
         <div class="d-flex justify-content-between text-muted mb-2">
           <strong>{{ originalPost.authorUsername }}</strong>
-          <small>{{ originalPost.createdAt | date }}</small>
+          <small>
+            {{ originalPost.createdAt | date }}
+            @if (originalPost.isEdited) { <em>(edited)</em> }
+          </small>
         </div>
-        <p class="card-text mb-0" style="white-space: pre-wrap;">{{ originalPost.content }}</p>
+
+        @if (editingPostId === originalPost.id) {
+          <textarea class="form-control mb-2" rows="4"
+                    [ngModel]="editContent" (ngModelChange)="editContent = $event"></textarea>
+          <button class="btn btn-sm btn-primary me-2" (click)="saveEdit(originalPost)">Save</button>
+          <button class="btn btn-sm btn-secondary" (click)="cancelEdit()">Cancel</button>
+        } @else {
+          <p class="card-text mb-0" style="white-space: pre-wrap;">{{ originalPost.content }}</p>
+          @if (canEdit(originalPost)) {
+            <div class="mt-1">
+              <button class="btn btn-sm btn-link p-0" (click)="startEdit(originalPost)">Edit</button>
+            </div>
+          }
+        }
       </div>
     </div>
   }
@@ -38,9 +66,30 @@
       <div class="list-group-item">
         <div class="d-flex justify-content-between text-muted mb-1">
           <strong>{{ reply.authorUsername }}</strong>
-          <small>{{ reply.createdAt | date }}</small>
+          <small>
+            {{ reply.createdAt | date }}
+            @if (reply.isEdited) { <em>(edited)</em> }
+          </small>
         </div>
-        <p class="mb-0" style="white-space: pre-wrap;">{{ reply.content }}</p>
+
+        @if (editingPostId === reply.id) {
+          <textarea class="form-control mb-2" rows="3"
+                    [ngModel]="editContent" (ngModelChange)="editContent = $event"></textarea>
+          <button class="btn btn-sm btn-primary me-2" (click)="saveEdit(reply)">Save</button>
+          <button class="btn btn-sm btn-secondary" (click)="cancelEdit()">Cancel</button>
+        } @else {
+          <p class="mb-0" style="white-space: pre-wrap;">{{ reply.content }}</p>
+          @if (canEdit(reply) || canDelete(reply)) {
+            <div class="mt-1">
+              @if (canEdit(reply)) {
+                <button class="btn btn-sm btn-link p-0 me-2" (click)="startEdit(reply)">Edit</button>
+              }
+              @if (canDelete(reply)) {
+                <button class="btn btn-sm btn-link text-danger p-0" (click)="deleteReply(reply)">Delete</button>
+              }
+            </div>
+          }
+        }
       </div>
     }
   </div>

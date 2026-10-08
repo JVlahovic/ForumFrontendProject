@@ -1,9 +1,7 @@
-export interface ThreadCategory {
-  id: number;
+export interface ThreadCategoryCreate {
   name: string;
   description: string;
   position: number;
-  canPost: boolean;
   accessCtrl: string;
   postCtrl: string;
 }

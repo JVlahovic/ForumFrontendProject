@@ -5,10 +5,12 @@ import {AdminUser} from '../../models/admin-user';
 import {RoleRead} from '../../models/role-read';
 import {extractErrorMessage} from '../../services/api/error.util';
 import {Page} from '../../models/page';
+import {ThreadCategory} from '../../models/thread-category';
+import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-admin-panel',
-  imports: [DatePipe],
+  imports: [DatePipe, FormsModule],
   templateUrl: './admin-panel.html',
   styleUrl: './admin-panel.css',
 })
@@ -19,6 +21,7 @@ export class AdminPanel {
 
   users: AdminUser[] = [];
   roles: RoleRead[] = [];
+  categories: ThreadCategory[] = [];
 
   roleSelection: {[userId: number] : number} = {};
   errorMessage = '';
@@ -29,6 +32,7 @@ export class AdminPanel {
   ngOnInit(): void {
     this.loadRoles();
     this.loadUsers();
+    this.loadCategories();
   }
 
   private loadRoles() {
@@ -47,6 +51,13 @@ export class AdminPanel {
         page.content.forEach(u => this.roleSelection[u.id] = u.roleId);
         this.cdr.detectChanges();
       },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  private loadCategories() {
+    this.apiAdminService.getCategories$().subscribe({
+      next: cats => { this.categories = cats; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
     });
   }
@@ -76,6 +87,22 @@ export class AdminPanel {
     if (!roleId) return;
     this.apiAdminService.setRole$(userId, roleId).subscribe({
       next: () => this.loadUsers(),
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  createCategory(form: NgForm) {
+    if (form.invalid) return;
+    this.apiAdminService.createCategory$(form.value).subscribe({
+      next: () => { form.resetForm(); this.loadCategories(); },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  deleteCategory(id: number) {
+    if (!confirm('Delete this category?')) return;
+    this.apiAdminService.deleteCategory$(id).subscribe({
+      next: () => this.loadCategories(),
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
     });
   }

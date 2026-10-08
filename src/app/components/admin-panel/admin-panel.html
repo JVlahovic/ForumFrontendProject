@@ -5,6 +5,7 @@
     <div class="alert alert-danger">{{ errorMessage }}</div>
   }
 
+  <h4 class="mb-2">Users</h4>
   <table class="table table-striped align-middle">
     <thead>
     <tr>
@@ -55,7 +56,7 @@
   </table>
 
   @if (totalPages > 1) {
-    <nav class="d-flex justify-content-between align-items-center">
+    <nav class="d-flex justify-content-between align-items-center mb-4">
       <button class="btn btn-outline-secondary btn-sm"
               [disabled]="currentPage === 0"
               (click)="goToPage(currentPage - 1)">Previous</button>
@@ -65,4 +66,54 @@
               (click)="goToPage(currentPage + 1)">Next</button>
     </nav>
   }
+
+  <h4 class="mt-5 mb-2">Categories</h4>
+  <form #catForm="ngForm" (ngSubmit)="createCategory(catForm)" class="row g-2 mb-3">
+    <div class="col-md-3">
+      <input class="form-control" name="name" ngModel required placeholder="Name">
+    </div>
+    <div class="col-md-3">
+      <input class="form-control" name="description" ngModel placeholder="Description">
+    </div>
+    <div class="col-md-1">
+      <input type="number" class="form-control" name="position" ngModel placeholder="Pos">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="accessCtrl" ngModel>
+        <option value="view:everyone">view:everyone</option>
+        <option value="view:registered">view:registered</option>
+        <option value="view:moderator">view:moderator</option>
+        <option value="view:admin">view:admin</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="postCtrl" ngModel>
+        <option value="post:registered">post:registered</option>
+        <option value="post:moderator">post:moderator</option>
+        <option value="post:admin">post:admin</option>
+      </select>
+    </div>
+    <div class="col-md-1">
+      <button class="btn btn-success w-100" type="submit" [disabled]="catForm.invalid">Add</button>
+    </div>
+  </form>
+
+  <table class="table table-sm align-middle">
+    <thead>
+    <tr><th>ID</th><th>Name</th><th>Access</th><th>Post</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (cat of categories; track cat.id) {
+        <tr>
+          <td>{{ cat.id }}</td>
+          <td>{{ cat.name }}</td>
+          <td>{{ cat.accessCtrl }}</td>
+          <td>{{ cat.postCtrl }}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" (click)="deleteCategory(cat.id)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
 </div>

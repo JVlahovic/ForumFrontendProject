@@ -40,8 +40,32 @@ export class ThreadDetail {
   totalElements = 0;
   pageSize = 10;
 
+  editingPostId: number | null = null;
+  editContent = '';
+
   get isLogged() {
     return this.apiAuthService.isLogged.value;
+  }
+
+  get currentUsername(): string | null {
+    return this.apiAuthService.getUsernameFromToken();
+  }
+
+  isOwn(post: PostRead): boolean {
+    return post.authorUsername === this.currentUsername;
+  }
+
+  canEdit(post: PostRead): boolean {
+    return this.isOwn(post);
+  }
+
+  canDelete(post: PostRead): boolean {
+    return this.isOwn(post) || this.canModerate;
+  }
+
+  get canModerate(): boolean {
+    const role = (this.apiAuthService.getRoleFromToken() ?? '').toUpperCase();
+    return role === 'ADMIN' || role === 'MODERATOR';
   }
 
   ngOnInit() {
@@ -52,11 +76,11 @@ export class ThreadDetail {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([params, query]) => {
         const id = Number(params.get('threadId'));
-        if (id !== this.threadId) {          // param change into reload thread (avoids redundant calls)
+        if (id !== this.threadId) {
           this.threadId = id;
           this.loadThread();
         }
-        const urlPage = Number(query['page']);            // 1-based; missing/invalid → page 1
+        const urlPage = Number(query['page']);
         this.currentPage = (!urlPage || urlPage < 1) ? 0 : urlPage - 1;
         this.loadPosts();
       });
@@ -64,21 +88,18 @@ export class ThreadDetail {
 
   private loadThread() {
     this.apiForumService.getThread$(this.threadId).subscribe({
-      next: data => {this.thread = data; this.cdr.detectChanges();},
-      error: err => {this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges();}
+      next: data => { this.thread = data; this.cdr.detectChanges(); },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
     });
   }
 
-  //original post / opening thread post is only on page 1. no need to carry it over.
   private loadPosts() {
     this.apiForumService.getPostsByThreadId$(this.threadId, this.currentPage).subscribe({
       next: (page: Page<PostRead>) => {
-        // A shared link may point past the end → snap to the last real page.
         if (page.totalPages > 0 && page.number >= page.totalPages) {
           this.goToPage(page.totalPages - 1);
           return;
         }
-
         this.currentPage = page.number;
         this.totalPages = page.totalPages;
         this.totalElements = page.totalElements;
@@ -97,33 +118,85 @@ export class ThreadDetail {
     });
   }
 
-
-
   goToPage(page: number) {
     if (page < 0 || (this.totalPages && page >= this.totalPages)) return;
-
-    if (page === this.currentPage) {                 // navigation to same URL won't re-emit queryParams
-      this.loadPosts();                              // force refresh (e.g. reply within current page)
+    if (page === this.currentPage) {
+      this.loadPosts();
       return;
     }
-
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
-      queryParams: { page: page === 0 ? null : page + 1 },   // 1-based; omit on page 1
+      queryParams: { page: page === 0 ? null : page + 1 },
       queryParamsHandling: 'merge'
-    });                                              // queryParams subscription drives loadPosts
+    });
   }
 
   submitReply(replyForm: NgForm) {
     if (replyForm.invalid) return;
-
     this.apiForumService.createPost$(this.threadId, replyForm.value).subscribe({
       next: () => {
         replyForm.resetForm();
         const newTotal = this.totalElements + 1;
         const lastPage = Math.max(0, Math.ceil(newTotal / this.pageSize) - 1);
-        this.goToPage(lastPage);                     // jump to where the new reply lives
+        this.goToPage(lastPage);
       },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  // ---------- post edit ----------
+  startEdit(post: PostRead) {
+    this.editingPostId = post.id;
+    this.editContent = post.content;
+    this.cdr.detectChanges();
+  }
+
+  cancelEdit() {
+    this.editingPostId = null;
+    this.editContent = '';
+    this.cdr.detectChanges();
+  }
+
+  saveEdit(post: PostRead) {
+    this.apiForumService.updatePost$(post.id, {content: this.editContent}).subscribe({
+      next: () => {
+        this.editingPostId = null;
+        this.editContent = '';
+        this.loadPosts();
+      },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  // ---------- post delete ----------
+  deleteReply(post: PostRead) {
+    if (!confirm('Delete this reply?')) return;
+    this.apiForumService.deletePost$(post.id).subscribe({
+      next: () => this.loadPosts(),
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  // ---------- thread moderation ----------
+  togglePin() {
+    this.apiForumService.togglePin$(this.threadId).subscribe({
+      next: t => { this.thread = t; this.cdr.detectChanges(); },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  toggleLock() {
+    this.apiForumService.toggleLock$(this.threadId).subscribe({
+      next: t => { this.thread = t; this.cdr.detectChanges(); },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
+  deleteThread() {
+    if (!confirm('Delete this entire thread?')) return;
+    const categoryId = this.thread?.threadCategoryId;
+    this.apiForumService.deleteThread$(this.threadId).subscribe({
+      next: () => this.router.navigate(['/category', categoryId]),
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
     });
   }
