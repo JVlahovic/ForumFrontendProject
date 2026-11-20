@@ -1,1 +1,8 @@
-<p>category-redirect works!</p>
+<div class="container mt-4">
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+    <a class="btn btn-primary" routerLink="/">Go to Home</a>
+  } @else {
+    <p class="text-muted">Redirecting…</p>
+  }
+</div>

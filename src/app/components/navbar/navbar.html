@@ -11,8 +11,14 @@
         <a class="nav-link" routerLink="/admin-panel">Admin Panel</a>
       }
     </div>
-    <div class="navbar-nav ms-auto">
+
+    <div class="navbar-nav ms-auto align-items-center">
       @if (isLogged) {
+        <form class="d-flex me-3" (submit)="onSearch($event, searchInput.value)">
+          <input #searchInput class="form-control form-control-sm me-1" type="search"
+                 placeholder="Search threads…" style="min-width: 180px;">
+          <button class="btn btn-sm btn-outline-light" type="submit">Search</button>
+        </form>
         <span class="nav-link text-light">{{ username }}</span>
         <a class="nav-link" (click)="logout()" style="cursor: pointer;">Logout</a>
       } @else {

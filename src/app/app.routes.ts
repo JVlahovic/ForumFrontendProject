@@ -12,6 +12,7 @@ import {CategoryRedirect} from './components/category-redirect/category-redirect
 import {UserPanel} from './components/user-panel/user-panel';
 import {authGuard} from './guards/auth-guard';
 import {ForgotPassword} from './components/forgot-password/forgot-password';
+import {Search} from './components/search/search';
 
 export const routes: Routes = [
 
@@ -37,6 +38,8 @@ export const routes: Routes = [
 
   { path: 'user-panel', component: UserPanel, canActivate: [authGuard] },
 
-  { path: 'forgot-password', component: ForgotPassword }
+  { path: 'forgot-password', component: ForgotPassword },
+
+  { path: 'search', component: Search, canActivate: [authGuard] }
 
 ];

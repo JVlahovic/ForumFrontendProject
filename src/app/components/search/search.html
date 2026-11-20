@@ -1,0 +1,29 @@
+<div class="container mt-4">
+  <h2 class="mb-3">Search Threads</h2>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger">{{ errorMessage }}</div>
+  }
+
+  @if (searched) {
+    <p class="text-muted">Results for “{{ searchTerm }}”</p>
+  }
+
+  @if (searched && groupedResults.length === 0) {
+    <p class="text-muted">No threads matched your search.</p>
+  }
+
+  @for (group of groupedResults; track group.categoryName) {
+    <h4 class="mt-4">{{ group.categoryName }}</h4>
+    <div class="list-group">
+      @for (t of group.threads; track t.id) {
+        <a class="list-group-item list-group-item-action" routerLink="/thread/{{ t.id }}">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>{{ t.title }}</span>
+            <small class="text-muted">{{ t.authorUsername }} · {{ t.createdAt | date }}</small>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

@@ -28,6 +28,7 @@ export class UserPanel {
   }
 
   private loadProfile() {
+    this.errorMessage = '';
     this.apiUserService.getProfile$().subscribe({
       next: data => { this.profile = data; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
@@ -35,6 +36,7 @@ export class UserPanel {
   }
 
   private loadThreads() {
+    this.errorMessage = '';
     this.apiUserService.getMyThreads$().subscribe({
       next: data => { this.threads = data; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }

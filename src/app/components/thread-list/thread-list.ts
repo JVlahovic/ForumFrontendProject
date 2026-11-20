@@ -31,6 +31,7 @@ export class ThreadList {
   }
 
   private loadThreads() {
+    this.errorMessage = '';
     this.apiForumService.getThreadsByCategory$(this.categoryId).subscribe({
       next: data => {
         this.threads = data;

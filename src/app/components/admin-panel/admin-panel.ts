@@ -1,16 +1,15 @@
 import {ChangeDetectorRef, Component, inject} from '@angular/core';
-import {DatePipe} from '@angular/common';
+import {FormsModule, NgForm} from '@angular/forms';
 import {ApiAdminService} from '../../services/api/api-admin.service';
 import {AdminUser} from '../../models/admin-user';
 import {RoleRead} from '../../models/role-read';
-import {extractErrorMessage} from '../../services/api/error.util';
-import {Page} from '../../models/page';
 import {ThreadCategory} from '../../models/thread-category';
-import {FormsModule, NgForm} from '@angular/forms';
+import {Page} from '../../models/page';
+import {extractErrorMessage} from '../../services/api/error.util';
 
 @Component({
   selector: 'app-admin-panel',
-  imports: [DatePipe, FormsModule],
+  imports: [FormsModule],
   templateUrl: './admin-panel.html',
   styleUrl: './admin-panel.css',
 })
@@ -23,11 +22,15 @@ export class AdminPanel {
   roles: RoleRead[] = [];
   categories: ThreadCategory[] = [];
 
-  roleSelection: {[userId: number] : number} = {};
+  roleSelection: {[userId: number]: number} = {};
   errorMessage = '';
 
   currentPage = 0;
   totalPages = 0;
+
+  // user search
+  userFilterName = '';
+  userFilterRoleId: number | null = null;
 
   ngOnInit(): void {
     this.loadRoles();
@@ -36,6 +39,7 @@ export class AdminPanel {
   }
 
   private loadRoles() {
+    this.errorMessage = '';
     this.apiAdminService.getRoles$().subscribe({
       next: roles => { this.roles = roles; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
@@ -43,7 +47,8 @@ export class AdminPanel {
   }
 
   private loadUsers() {
-    this.apiAdminService.getUsers$(this.currentPage).subscribe({
+    this.errorMessage = '';
+    this.apiAdminService.getUsers$(this.currentPage, this.userFilterName, this.userFilterRoleId ?? undefined).subscribe({
       next: (page: Page<AdminUser>) => {
         this.users = page.content;
         this.currentPage = page.number;
@@ -55,11 +60,21 @@ export class AdminPanel {
     });
   }
 
-  private loadCategories() {
-    this.apiAdminService.getCategories$().subscribe({
-      next: cats => { this.categories = cats; this.cdr.detectChanges(); },
-      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
-    });
+  applyUserFilter() {
+    this.currentPage = 0;
+    this.loadUsers();
+  }
+
+  onUserRoleFilterChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.userFilterRoleId = value ? Number(value) : null;
+  }
+
+  clearUserFilter() {
+    this.userFilterName = '';
+    this.userFilterRoleId = null;
+    this.currentPage = 0;
+    this.loadUsers();
   }
 
   goToPage(page: number) {
@@ -73,6 +88,7 @@ export class AdminPanel {
   }
 
   toggleBan(user: AdminUser) {
+    this.errorMessage = '';
     const call = user.isActive
       ? this.apiAdminService.banUser$(user.id)
       : this.apiAdminService.unbanUser$(user.id);
@@ -83,6 +99,7 @@ export class AdminPanel {
   }
 
   applyRole(userId: number) {
+    this.errorMessage = '';
     const roleId = this.roleSelection[userId];
     if (!roleId) return;
     this.apiAdminService.setRole$(userId, roleId).subscribe({
@@ -91,7 +108,16 @@ export class AdminPanel {
     });
   }
 
+  private loadCategories() {
+    this.errorMessage = '';
+    this.apiAdminService.getCategories$().subscribe({
+      next: cats => { this.categories = cats; this.cdr.detectChanges(); },
+      error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
+    });
+  }
+
   createCategory(form: NgForm) {
+    this.errorMessage = '';
     if (form.invalid) return;
     this.apiAdminService.createCategory$(form.value).subscribe({
       next: () => { form.resetForm(); this.loadCategories(); },
@@ -100,6 +126,7 @@ export class AdminPanel {
   }
 
   deleteCategory(id: number) {
+    this.errorMessage = '';
     if (!confirm('Delete this category?')) return;
     this.apiAdminService.deleteCategory$(id).subscribe({
       next: () => this.loadCategories(),

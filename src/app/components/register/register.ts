@@ -20,6 +20,9 @@ export class Register {
 
   submit(registerForm: NgForm) {
     const registerInfo: RegisterRequest = registerForm.value;
+
+    this.errorMessage = '';
+
     this.apiAuthService.register$(registerInfo).subscribe({
       next: () => this.router.navigate(['/verify'], { queryParams: { email: registerInfo.email } }), //i am passing the email onto verify and hiding it cause the user shouldn't have to bother typing it out again.
       error: (err) => {

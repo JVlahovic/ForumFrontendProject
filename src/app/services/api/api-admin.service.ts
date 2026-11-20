@@ -7,6 +7,7 @@ import {RoleRead} from '../../models/role-read';
 import {RoleAssignment} from '../../models/role-assignment';
 import {ThreadCategory} from '../../models/thread-category';
 import {ThreadCategoryCreate} from '../../models/thread-category-create';
+import {HttpParams} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +17,10 @@ export class ApiAdminService {
   private http = inject(HttpClient)
   private url = Environment.apiUrl;
 
-  getUsers$(page = 0) {
-    return this.http.get<Page<AdminUser>>(this.url + '/adminpanel/users?page=' + page);
-  }
+  // Deprecated
+  // getUsers$(page = 0) {
+  //   return this.http.get<Page<AdminUser>>(this.url + '/adminpanel/users?page=' + page);
+  // }
 
   getRoles$() {
     return this.http.get<RoleRead[]>(this.url + '/adminpanel/roles');
@@ -48,5 +50,13 @@ export class ApiAdminService {
   deleteCategory$(id: number) {
     return this.http.delete(this.url + '/thread-categories/' + id);
   }
+
+  getUsers$(page = 0, username = '', roleId?: number) {
+    let params = new HttpParams().set('page', String(page));
+    if (username.trim()) params = params.set('username', username.trim());
+    if (roleId) params = params.set('roleId', String(roleId));
+    return this.http.get<Page<AdminUser>>(this.url + '/adminpanel/users', {params});
+  }
+
 
 }

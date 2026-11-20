@@ -60,6 +60,11 @@ export class ApiForumService {
 
   deleteThread$(threadId: number) {
     return this.http.delete(this.url + '/threads/' + threadId);
-
   }
+
+  searchThreads$(title: string) {
+    return this.http.get<ThreadRead[]>(
+      this.url + '/threads/search?title=' + encodeURIComponent(title));
+  }
+
 }

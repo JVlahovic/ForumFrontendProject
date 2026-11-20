@@ -26,6 +26,7 @@ export class ThreadCreate {
   }
 
   submit(threadForm: NgForm) {
+    this.errorMessage = '';
     const threadInfo: ThreadCreateModel = {
       title: threadForm.value.title,
       content: threadForm.value.content,

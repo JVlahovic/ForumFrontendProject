@@ -5,7 +5,30 @@
     <div class="alert alert-danger">{{ errorMessage }}</div>
   }
 
+  <!-- ================= USERS ================= -->
   <h4 class="mb-2">Users</h4>
+
+  <div class="row g-2 mb-2">
+    <div class="col-md-4">
+      <input class="form-control" placeholder="Search username…"
+             [(ngModel)]="userFilterName" (keyup.enter)="applyUserFilter()">
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" (change)="onUserRoleFilterChange($event)">
+        <option value="">All roles</option>
+        @for (role of roles; track role.id) {
+          <option [value]="role.id">{{ role.roleDescription }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100" (click)="applyUserFilter()">Search</button>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-secondary w-100" (click)="clearUserFilter()">Clear</button>
+    </div>
+  </div>
+
   <table class="table table-striped align-middle">
     <thead>
     <tr>
@@ -67,6 +90,7 @@
     </nav>
   }
 
+  <!-- ================= CATEGORIES ================= -->
   <h4 class="mt-5 mb-2">Categories</h4>
   <form #catForm="ngForm" (ngSubmit)="createCategory(catForm)" class="row g-2 mb-3">
     <div class="col-md-3">

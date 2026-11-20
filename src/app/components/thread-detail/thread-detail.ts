@@ -87,6 +87,7 @@ export class ThreadDetail {
   }
 
   private loadThread() {
+    this.errorMessage = '';
     this.apiForumService.getThread$(this.threadId).subscribe({
       next: data => { this.thread = data; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
@@ -94,6 +95,7 @@ export class ThreadDetail {
   }
 
   private loadPosts() {
+    this.errorMessage = '';
     this.apiForumService.getPostsByThreadId$(this.threadId, this.currentPage).subscribe({
       next: (page: Page<PostRead>) => {
         if (page.totalPages > 0 && page.number >= page.totalPages) {
@@ -132,6 +134,7 @@ export class ThreadDetail {
   }
 
   submitReply(replyForm: NgForm) {
+    this.errorMessage = '';
     if (replyForm.invalid) return;
     this.apiForumService.createPost$(this.threadId, replyForm.value).subscribe({
       next: () => {
@@ -144,7 +147,7 @@ export class ThreadDetail {
     });
   }
 
-  // ---------- post edit ----------
+  //post edit
   startEdit(post: PostRead) {
     this.editingPostId = post.id;
     this.editContent = post.content;
@@ -158,6 +161,7 @@ export class ThreadDetail {
   }
 
   saveEdit(post: PostRead) {
+    this.errorMessage = '';
     this.apiForumService.updatePost$(post.id, {content: this.editContent}).subscribe({
       next: () => {
         this.editingPostId = null;
@@ -168,8 +172,9 @@ export class ThreadDetail {
     });
   }
 
-  // ---------- post delete ----------
+  //post delete
   deleteReply(post: PostRead) {
+    this.errorMessage = '';
     if (!confirm('Delete this reply?')) return;
     this.apiForumService.deletePost$(post.id).subscribe({
       next: () => this.loadPosts(),
@@ -179,6 +184,7 @@ export class ThreadDetail {
 
   // ---------- thread moderation ----------
   togglePin() {
+    this.errorMessage = '';
     this.apiForumService.togglePin$(this.threadId).subscribe({
       next: t => { this.thread = t; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
@@ -186,6 +192,7 @@ export class ThreadDetail {
   }
 
   toggleLock() {
+    this.errorMessage = '';
     this.apiForumService.toggleLock$(this.threadId).subscribe({
       next: t => { this.thread = t; this.cdr.detectChanges(); },
       error: err => { this.errorMessage = extractErrorMessage(err); this.cdr.detectChanges(); }
@@ -193,6 +200,7 @@ export class ThreadDetail {
   }
 
   deleteThread() {
+    this.errorMessage = '';
     if (!confirm('Delete this entire thread?')) return;
     const categoryId = this.thread?.threadCategoryId;
     this.apiForumService.deleteThread$(this.threadId).subscribe({

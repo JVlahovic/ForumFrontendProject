@@ -3,6 +3,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { VerifyRequest } from '../../models/verify-request';
 import { ApiAuthService } from '../../services/api/api-auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {extractErrorMessage} from '../../services/api/error.util';
 
 @Component({
   selector: 'app-verify',
@@ -27,24 +28,33 @@ export class Verify {
 
   submit(verifyForm: NgForm) {
     const verifyInfo: VerifyRequest = verifyForm.value;
+    this.errorMessage = '';
+    this.successMessage = '';
+
     this.apiAuthService.verify$(verifyInfo).subscribe({
-      next: () => { //right after next, a full-blown code block can be done with another pair of curly braces.
+      next: () => {
         this.successMessage = 'Verification successfully completed. Routing you to the login page.';
         this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
-      error: (err) => this.errorMessage = err.error
+      error: (err) => {
+        this.errorMessage = extractErrorMessage(err);
+        this.cdr.detectChanges();
+      }
     });
   }
 
   resend() {
+    this.errorMessage = '';
+    this.successMessage = '';
+
     this.apiAuthService.resend$({ email: this.email }).subscribe({
       next: () => {
         this.successMessage = 'New code sent! Check your email again for the new code.';
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorMessage = err.error;
+        this.errorMessage = extractErrorMessage(err);
         this.cdr.detectChanges();
       }
     });

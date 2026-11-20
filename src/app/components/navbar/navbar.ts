@@ -30,4 +30,11 @@ export class Navbar {
     return this.apiAuthService.getRoleFromToken()?.toUpperCase() === 'ADMIN';
   }
 
+  onSearch(event: Event, term: string) {
+    event.preventDefault();
+    const q = term.trim();
+    if (!q) return;
+    this.router.navigate(['/search'], { queryParams: { q } });
+  }
+
 }

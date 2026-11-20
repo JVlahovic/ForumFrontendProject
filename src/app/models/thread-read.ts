@@ -8,4 +8,5 @@ export interface ThreadRead {
   authorId: number;
   authorUsername: string;
   threadCategoryId: number;
+  threadCategoryName: string;
 }

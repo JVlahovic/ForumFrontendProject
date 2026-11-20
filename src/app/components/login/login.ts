@@ -22,6 +22,8 @@ export class Login {
   submit(loginForm: NgForm) {
     const loginInfo: LoginRequest = loginForm.value;
 
+    this.errorMessage = '';
+
     this.apiAuthService.login$(loginInfo).subscribe({
       next: (data) => {
         localStorage.setItem('loginToken', data);
